@@ -70,16 +70,24 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
-        if (!Yii::$app->user->isGuest) {
+        if (!\Yii::$app->user->isGuest) {
             return $this->goHome();
         }
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        } else {
-            $model->password = '';
+            if (\Yii::$app->user->can('admin-panel'))
+            {
+                return $this->goBack();
+            }
+            else
+            {
+                Yii::$app->user->logout();
+                \Yii::$app->getSession()->setFlash('error', 'You are not authorized to login Admin\'s penal.<br /> Please use valid Username & Password.<br />Please contact Administrator for details.');
+                return $this->redirect(['site/login']);
+            }
 
+        } else {
             return $this->render('login', [
                 'model' => $model,
             ]);

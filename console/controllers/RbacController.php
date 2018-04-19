@@ -21,12 +21,14 @@ class RbacController extends Controller
         $auth->add($admin);
         $auth->add($user);
 
+        $auth->assign($admin, 1);
+        $auth->assign($user, 2);
+
         $dashboard = $auth->createPermission('admin-panel');
         $dashboard->description = 'Admin panel';
         $auth->add($dashboard);
-        $auth->addChild($user, $dashboard);
+        $auth->addChild($admin, $dashboard);
 
-        $auth->assign($admin, 3);
-        $auth->assign($user, 2);
+
     }
 }
